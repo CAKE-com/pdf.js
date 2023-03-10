@@ -639,7 +639,7 @@ const PDFViewerApplication = {
       const queryString = document.location.search.substring(1);
       const params = parseQueryString(queryString);
       file = params.get("file") ?? AppOptions.get("defaultUrl");
-      validateFileURL(file);
+      validateFileURL(file, true);
     } else if (PDFJSDev.test("MOZCENTRAL")) {
       file = window.location.href;
     } else if (PDFJSDev.test("CHROME")) {
@@ -2152,19 +2152,18 @@ if (typeof PDFJSDev === "undefined" || !PDFJSDev.test("MOZCENTRAL")) {
 }
 
 if (typeof PDFJSDev === "undefined" || PDFJSDev.test("GENERIC")) {
-  const HOSTED_VIEWER_ORIGINS = [
-    "null",
-    "http://mozilla.github.io",
-    "https://mozilla.github.io",
-  ];
+  const HOSTED_VIEWER_ORIGINS = ["null"];
   // eslint-disable-next-line no-var
-  var validateFileURL = function (file) {
+  var validateFileURL = function (file, forceNullHostedViewOrigin = false) {
     if (!file) {
       return;
     }
     try {
       const viewerOrigin = new URL(window.location.href).origin || "null";
-      if (HOSTED_VIEWER_ORIGINS.includes(viewerOrigin)) {
+      if (
+        HOSTED_VIEWER_ORIGINS.includes(viewerOrigin) ||
+        forceNullHostedViewOrigin
+      ) {
         // Hosted or local viewer, allow for any file locations
         return;
       }

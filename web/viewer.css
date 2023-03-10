@@ -30,7 +30,7 @@
   --doorhanger-icon-opacity: 0.9;
   --editor-toolbar-base-offset: 105px;
 
-  --main-color: rgb(12 12 13);
+  --main-color: rgb(249 249 250);
   --body-bg-color: rgb(212 212 215);
   --progressBar-color: rgb(10 132 255);
   --progressBar-bg-color: rgb(221 221 222);
@@ -221,7 +221,7 @@ body {
 }
 
 body {
-  background-color: var(--body-bg-color);
+  background-color: #263238;
   scrollbar-color: var(--scrollbar-color) var(--scrollbar-bg-color);
 }
 
@@ -261,7 +261,8 @@ body {
 
 #sidebarContainer {
   position: absolute;
-  inset-block: 32px 0;
+  top: 52px;
+  bottom: 0;
   inset-inline-start: calc(-1 * var(--sidebar-width));
   width: var(--sidebar-width);
   visibility: hidden;
@@ -299,7 +300,10 @@ body {
 #viewerContainer {
   overflow: auto;
   position: absolute;
-  inset: 32px 0 0;
+  top: 52px;
+  right: 0;
+  bottom: 0;
+  left: 0;
   outline: none;
 }
 #viewerContainer:not(.pdfPresentationMode) {
@@ -361,6 +365,8 @@ body {
 
 #toolbarViewer {
   height: 32px;
+  background-color: #12191d;
+  padding: 10px;
 }
 
 #loadingBar {
@@ -372,7 +378,7 @@ body {
   position: absolute;
   inset-inline: 0 var(--progressBar-end-offset);
   height: 4px;
-  background-color: var(--progressBar-bg-color);
+  background-color: #1d272c;
   border-bottom: 1px solid var(--toolbar-border-color);
   transition-property: inset-inline-start;
   transition-duration: var(--sidebar-transition-duration);
@@ -391,7 +397,7 @@ body {
   transform: scaleX(var(--progressBar-percent));
   transform-origin: calc(50% - 50% * var(--dir-factor)) 0;
   height: 100%;
-  background-color: var(--progressBar-color);
+  background-color: #673ab7;
   overflow: hidden;
   transition: transform 200ms;
 }
@@ -731,7 +737,8 @@ body {
 
 .splitToolbarButton > .toolbarButton:is(:hover, :focus-visible),
 .dropdownToolbarButton:hover {
-  background-color: var(--button-hover-color);
+  background-color: #37474f;
+  border-radius: 50%;
 }
 .splitToolbarButton > .toolbarButton {
   position: relative;
@@ -767,7 +774,8 @@ body {
 }
 
 .toolbarButton:is(:hover, :focus-visible) {
-  background-color: var(--button-hover-color);
+  background-color: #37474f;
+  border-radius: 50%;
 }
 .secondaryToolbarButton:is(:hover, :focus-visible) {
   background-color: var(--doorhanger-hover-bg-color);
@@ -817,13 +825,13 @@ body {
   font-size: 12px;
   color: var(--main-color);
   margin: 0;
-  padding-block: 1px 2px;
-  padding-inline: 6px 38px;
-  border: none;
-  background-color: var(--dropdown-btn-bg-color);
+  padding: 1px 0 2px;
+  padding-inline-start: 6px;
+  border: 1px solid rgb(55 71 79);
+  background-color: #1d272c;
+  border-radius: 8px;
 }
 .dropdownToolbarButton > select:is(:hover, :focus-visible) {
-  background-color: var(--button-hover-color);
   color: var(--toggled-btn-color);
 }
 .dropdownToolbarButton > select > option {
@@ -843,8 +851,8 @@ body {
    * All relevant containers have a size of 28x28 */
   position: absolute;
   display: inline-block;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 
   content: "";
   background-color: var(--toolbar-icon-bg-color);
@@ -857,8 +865,8 @@ body {
 
 .toolbarButton::before {
   opacity: var(--toolbar-icon-opacity);
-  top: 6px;
-  left: 6px;
+  top: 5px;
+  left: 5px;
 }
 
 .toolbarButton:is(:hover, :focus-visible)::before,
@@ -1085,10 +1093,10 @@ a:is(.toolbarButton, .secondaryToolbarButton)[href="#"] {
 .toolbarField {
   padding: 4px 7px;
   margin: 3px 0;
-  border-radius: 2px;
-  background-color: var(--field-bg-color);
+  border-radius: 8px;
+  background-color: #1d272c;
   background-clip: padding-box;
-  border: 1px solid var(--field-border-color);
+  border: 1px solid #37474f;
   box-shadow: none;
   color: var(--field-color);
   font-size: 12px;
@@ -1150,7 +1158,7 @@ a:is(.toolbarButton, .secondaryToolbarButton)[href="#"] {
 }
 
 .toolbarField:focus {
-  border-color: #0a84ff;
+  border-color: #673ab7;
 }
 
 .toolbarLabel {
@@ -1523,4 +1531,55 @@ dialog :link {
   #scaleSelectContainer {
     display: none;
   }
+}
+
+/* The emerging W3C standard
+that is currently Firefox-only */
+* {
+  scrollbar-color: rgba(198 210 217 / 0.5) rgba(25 26 31 / 0);
+  scrollbar-width: thin;
+}
+
+/* Works on Chrome/Edge/Safari */
+*::-webkit-scrollbar {
+  width: 15px;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(255 255 255 / 0);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(198 210 217 / 0.5);
+  border-radius: 20px;
+  border: 4px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-corner {
+  background: rgba(0 0 0 / 0);
+}
+
+#viewFind,
+#openFile,
+#editorFreeText,
+#editorInk,
+#secondaryToolbarToggle,
+#editorModeSeparator,
+#sidebarToggle,
+#toolbarViewerRight .verticalToolbarSeparator {
+  display: none;
+}
+
+#scaleSelectContainer {
+  background-color: transparent;
+}
+
+#toolbarViewerRight {
+  padding-right: 20px;
+}
+
+#pageNumber {
+  font-size: 12px;
+  line-height: 18px;
 }
