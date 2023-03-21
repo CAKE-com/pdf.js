@@ -206,6 +206,7 @@ function webViewerLoad() {
     }
   }
   AppOptions.set("disablePreferences", true);
+  AppOptions.set("enableScripting", false);
   AppOptions.set("externalLinkTarget", LinkTarget.BLANK);
   // set Dark themed viewer
   AppOptions.set("viewerCssTheme", 2);
