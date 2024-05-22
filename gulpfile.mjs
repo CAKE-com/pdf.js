@@ -464,7 +464,7 @@ function tweakWebpackOutput(jsName) {
 
 function createMainBundle(defines) {
   const mainFileConfig = createWebpackConfig(defines, {
-    filename: defines.MINIFIED ? "pdf.min.mjs" : "pdf.mjs",
+    filename: "pdf.mjs",
     library: {
       type: "module",
     },
@@ -528,9 +528,7 @@ function createSandboxBundle(defines, extraOptions = undefined) {
   const sandboxFileConfig = createWebpackConfig(
     sandboxDefines,
     {
-      filename: sandboxDefines.MINIFIED
-        ? "pdf.sandbox.min.mjs"
-        : "pdf.sandbox.mjs",
+      filename: "pdf.sandbox.mjs",
       library: {
         type: "module",
       },
@@ -546,7 +544,7 @@ function createSandboxBundle(defines, extraOptions = undefined) {
 
 function createWorkerBundle(defines) {
   const workerFileConfig = createWebpackConfig(defines, {
-    filename: defines.MINIFIED ? "pdf.worker.min.mjs" : "pdf.worker.mjs",
+    filename: "pdf.worker.mjs",
     library: {
       type: "module",
     },
@@ -606,9 +604,7 @@ function createComponentsBundle(defines) {
 
 function createImageDecodersBundle(defines) {
   const componentsFileConfig = createWebpackConfig(defines, {
-    filename: defines.MINIFIED
-      ? "pdf.image_decoders.min.mjs"
-      : "pdf.image_decoders.mjs",
+    filename: "pdf.image_decoders.mjs",
     library: {
       type: "module",
     },
@@ -1203,10 +1199,26 @@ function buildMinified(defines, dir) {
   return merge([
     createMainBundle(defines).pipe(gulp.dest(dir + "build")),
     createWorkerBundle(defines).pipe(gulp.dest(dir + "build")),
-    createSandboxBundle(defines).pipe(gulp.dest(dir + "build")),
-    createImageDecodersBundle({ ...defines, IMAGE_DECODERS: true }).pipe(
-      gulp.dest(dir + "image_decoders")
-    ),
+    // createSandboxBundle(defines).pipe(gulp.dest(dir + "build")),
+    createWebBundle(defines, {
+      defaultPreferencesDir: "minified/",
+    }).pipe(gulp.dest(dir + "web")),
+    gulp
+      .src("web/images/*.{png,svg,gif}", { base: "web/" })
+      .pipe(gulp.dest(dir + "web")),
+
+    preprocessHTML("web/viewer.html", defines).pipe(gulp.dest(dir + "web")),
+    preprocessCSS("web/viewer.css", defines)
+      .pipe(
+        postcss([
+          postcssDirPseudoClass(),
+          discardCommentsCSS(),
+          postcssNesting(),
+          postcssDarkThemeClass(),
+          autoprefixer(AUTOPREFIXER_CONFIG),
+        ])
+      )
+      .pipe(gulp.dest(dir + "web")),
   ]);
 }
 
