@@ -30,8 +30,8 @@
   --doorhanger-icon-opacity: 0.9;
   --editor-toolbar-base-offset: 105px;
 
-  --main-color: rgb(249 24 250);
-  --body-bg-color: rgb(212 21 215);
+  --main-color: rgb(249 249 250);
+  --body-bg-color: rgb(212 212 215);
   --progressBar-color: rgb(103 58 183);
   --progressBar-bg-color: rgb(29 39 44);
   --progressBar-blend-color: rgb(103 58 183);
@@ -263,13 +263,12 @@ body {
 
 #sidebarContainer {
   position: absolute;
-  top: 52px;
-  bottom: 0;
+  inset-block: 52px 0;
   inset-inline-start: calc(-1 * var(--sidebar-width));
   width: var(--sidebar-width);
   visibility: hidden;
   z-index: 100;
-  font: message-box;
+  /* font: message-box; */
   border-top: 1px solid rgb(51 51 51);
   border-inline-end: var(--doorhanger-border-color-whcm);
   transition-property: inset-inline-start;
@@ -302,10 +301,7 @@ body {
 #viewerContainer {
   overflow: auto;
   position: absolute;
-  top: 52px;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  inset: 52px 0 0;
   outline: none;
 }
 #viewerContainer:not(.pdfPresentationMode) {
@@ -827,8 +823,7 @@ body {
   font-size: 12px;
   color: var(--main-color);
   margin: 0;
-  padding: 1px 0 2px;
-  padding-inline-start: 6px;
+  padding: 1px 0 2px 6px;
   border: 1px solid rgb(55 71 79);
   background-color: #1d272c;
   border-radius: 8px;
@@ -1578,6 +1573,7 @@ that is currently Firefox-only */
 #openFile,
 #editorFreeText,
 #editorInk,
+#editorStamp,
 #secondaryToolbarToggle,
 #editorModeSeparator,
 #sidebarToggle,
