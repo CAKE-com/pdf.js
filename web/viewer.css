@@ -268,7 +268,7 @@ body {
   width: var(--sidebar-width);
   visibility: hidden;
   z-index: 100;
-  /* font: message-box; */
+  font: message-box;
   border-top: 1px solid rgb(51 51 51);
   border-inline-end: var(--doorhanger-border-color-whcm);
   transition-property: inset-inline-start;
@@ -327,6 +327,8 @@ body {
 .secondaryToolbar :is(input, button, a, select) {
   outline: none;
   font: message-box;
+  font-size: 12px;
+  line-height: 14px;
 }
 
 #toolbarContainer {
@@ -1109,6 +1111,10 @@ a:is(.toolbarButton, .secondaryToolbarButton)[href="#"] {
   margin-inline-start: 7px;
 }
 
+input#pageNumber {
+  line-height: 18px;
+}
+
 #pageNumber {
   -moz-appearance: textfield; /* hides the spinner in moz */
   text-align: end;
@@ -1571,6 +1577,7 @@ that is currently Firefox-only */
 
 #viewFind,
 #openFile,
+#editorModeButtons,
 #editorFreeText,
 #editorInk,
 #editorStamp,
@@ -1587,9 +1594,4 @@ that is currently Firefox-only */
 
 #toolbarViewerRight {
   padding-right: 20px;
-}
-
-#pageNumber {
-  font-size: 12px;
-  line-height: 18px;
 }
