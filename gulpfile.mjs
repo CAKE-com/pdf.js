@@ -89,6 +89,8 @@ const ENV_TARGETS = [
   "not dead",
 ];
 
+const PUMBLE_SUPPORTED_LOCALES = ["en-US", "es-ES", "de", "fr", "pt-BR"];
+
 // Default Autoprefixer config used for generic, components, minified-pre
 const AUTOPREFIXER_CONFIG = {
   overrideBrowserslist: ENV_TARGETS,
@@ -918,11 +920,9 @@ gulp.task("locale", function () {
   fs.rmSync(VIEWER_LOCALE_OUTPUT, { recursive: true, force: true });
   fs.mkdirSync(VIEWER_LOCALE_OUTPUT, { recursive: true });
 
-  const subfolders = fs.readdirSync(L10N_DIR);
-  subfolders.sort();
   const viewerOutput = Object.create(null);
   const locales = [];
-  for (const locale of subfolders) {
+  for (const locale of PUMBLE_SUPPORTED_LOCALES) {
     const dirPath = L10N_DIR + locale;
     if (!checkDir(dirPath)) {
       continue;
@@ -1204,7 +1204,11 @@ function buildMinified(defines, dir) {
       defaultPreferencesDir: "minified/",
     }).pipe(gulp.dest(dir + "web")),
     gulp
-      .src("web/images/*.{png,svg,gif}", { base: "web/" })
+      .src([
+        "web/images/*.{png,svg,gif}",
+        "web/locale/*/viewer.ftl",
+        "web/locale/locale.json"
+      ], { base: "web/" })
       .pipe(gulp.dest(dir + "web")),
 
     preprocessHTML("web/viewer.html", defines).pipe(gulp.dest(dir + "web")),
