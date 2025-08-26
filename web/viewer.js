@@ -34,8 +34,6 @@ window.PDFViewerApplication = PDFViewerApplication;
 window.PDFViewerApplicationConstants = AppConstants;
 window.PDFViewerApplicationOptions = AppOptions;
 window.PDFViewerApiVersion = pdfjsVersion;
-console.log("test commit");
-console.log("test commit 1");
 
 function getViewerConfiguration() {
   return {

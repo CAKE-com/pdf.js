@@ -1260,7 +1260,7 @@ gulp.task(
     },
     function createMinified() {
       console.log();
-      console.log("### Creating build dir of minified viewer");
+      console.log("### Creating build of minified viewer");
       const defines = { ...DEFINES, MINIFIED: true, GENERIC: true };
 
       return buildMinified(defines, MINIFIED_DIR);
