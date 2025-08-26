@@ -195,9 +195,7 @@ function preprocess(inFilename, outFilename, defines, includeFilePath) {
           break;
         case "include":
           if (state !== STATE_IF_FALSE && state !== STATE_ELSE_FALSE) {
-            console.log("including", m[2]);
             const filePath = includeFilePath || m[2];
-            console.log("actually including", filePath);
             include(filePath);
           }
           break;

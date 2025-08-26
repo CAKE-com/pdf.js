@@ -1267,7 +1267,7 @@ gulp.task(
     },
     function createTempViewerSnippet() {
       console.log();
-      console.log("### Create temp viewer snippet");
+      console.log("### Create temp viewer-html snippet");
 
       return createTempSnippet(MINIFIED_DIR + "build");
     },
@@ -1280,7 +1280,7 @@ gulp.task(
     },
     function removeTempViewerSnippet() {
       console.log();
-      console.log("### Remove temp viewer snippet");
+      console.log("### Remove temp viewer-html snippet");
 
       return removeTempSnippet();
     }
