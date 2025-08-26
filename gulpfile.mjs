@@ -1193,12 +1193,10 @@ gulp.task(
   })
 );
 
-function updateLinksWithVersion() {
+function updateLinksWithVersion(dir) {
   const version = getVersionJSON().version;
 
-  const content = fs
-    .readFileSync(MINIFIED_DIR + "web/viewer.html", "utf8")
-    .toString();
+  const content = fs.readFileSync(dir + "web/viewer.html", "utf8").toString();
 
   const contentUpdated = content
     .replace(/pdf.mjs/, `pdf.mjs?v=${version}`)
@@ -1206,7 +1204,7 @@ function updateLinksWithVersion() {
     .replace(/viewer.css/, `viewer.css?v=${version}`);
 
   return createStringSource("viewer.html", contentUpdated).pipe(
-    gulp.dest(MINIFIED_DIR + "web")
+    gulp.dest(dir + "web")
   );
 }
 
