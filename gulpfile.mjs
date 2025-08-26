@@ -1258,7 +1258,7 @@ gulp.task(
     async function prefsMinified() {
       await parseDefaultPreferences("minified/");
     },
-    function createMinifiedBuild() {
+    function createMinified() {
       console.log();
       console.log("### Creating build dir of minified viewer");
       const defines = { ...DEFINES, MINIFIED: true, GENERIC: true };
