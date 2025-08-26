@@ -1006,9 +1006,10 @@ function discardCommentsCSS() {
   return postcssDiscardComments({ remove });
 }
 
-function preprocessHTML(source, defines) {
+function preprocessHTML(source, defines, options = {}) {
+  const { includeFilePath = "" } = options;
   const outName = getTempFile("~preprocess", ".html");
-  preprocess(source, outName, defines);
+  preprocess(source, outName, defines, includeFilePath);
   const out = fs.readFileSync(outName).toString();
   fs.unlinkSync(outName);
 
@@ -1193,25 +1194,48 @@ gulp.task(
   })
 );
 
+function createTempSnippet() {
+  const content = fs.readFileSync("web/viewer-snippet.html", "utf8").toString();
+
+  const version = getVersionJSON().version;
+
+  const contentUpdated = content.replace(/pdf.mjs/, `pdf.mjs?v=${version}`);
+
+  return createStringSource("viewer-snippet-updated.html", contentUpdated).pipe(
+    gulp.dest(TMP_DIR)
+  );
+}
+
+function removeTempSnippet() {
+  return new Promise((resolve, reject) => {
+    fs.unlinkSync(TMP_DIR + "viewer-snippet-updated.html");
+    resolve();
+  });
+}
+
 function buildMinified(defines, dir) {
   fs.rmSync(dir, { recursive: true, force: true });
 
   return merge([
     createMainBundle(defines).pipe(gulp.dest(dir + "build")),
     createWorkerBundle(defines).pipe(gulp.dest(dir + "build")),
-    // createSandboxBundle(defines).pipe(gulp.dest(dir + "build")),
     createWebBundle(defines, {
       defaultPreferencesDir: "minified/",
     }).pipe(gulp.dest(dir + "web")),
     gulp
-      .src([
-        "web/images/*.{png,svg,gif}",
-        "web/locale/*/viewer.ftl",
-        "web/locale/locale.json"
-      ], { base: "web/" })
+      .src(
+        [
+          "web/images/*.{png,svg,gif}",
+          "web/locale/*/viewer.ftl",
+          "web/locale/locale.json",
+        ],
+        { base: "web/" }
+      )
       .pipe(gulp.dest(dir + "web")),
 
-    preprocessHTML("web/viewer.html", defines).pipe(gulp.dest(dir + "web")),
+    preprocessHTML("web/viewer.html", defines, {
+      includeFilePath: "../build/tmp/viewer-snippet-updated.html",
+    }).pipe(gulp.dest(dir + "web")),
     preprocessCSS("web/viewer.css", defines)
       .pipe(
         postcss([
@@ -1241,12 +1265,24 @@ gulp.task(
     async function prefsMinified() {
       await parseDefaultPreferences("minified/");
     },
-    function createMinified() {
+    function createTempViewerSnippet() {
       console.log();
-      console.log("### Creating minified viewer");
+      console.log("### Create temp viewer snippet");
+
+      return createTempSnippet(MINIFIED_DIR + "build");
+    },
+    function createMinifiedBuild() {
+      console.log();
+      console.log("### Creating build dir of minified viewer");
       const defines = { ...DEFINES, MINIFIED: true, GENERIC: true };
 
       return buildMinified(defines, MINIFIED_DIR);
+    },
+    function removeTempViewerSnippet() {
+      console.log();
+      console.log("### Remove temp viewer snippet");
+
+      return removeTempSnippet();
     }
   )
 );
