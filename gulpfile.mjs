@@ -14,34 +14,34 @@
  */
 /* eslint-env node */
 
-import {
-  babelPluginPDFJSPreprocessor,
-  preprocessPDFJSCode,
-} from "./external/builder/babel-plugin-pdfjs-preprocessor.mjs";
-import { exec, spawn, spawnSync } from "child_process";
-import autoprefixer from "autoprefixer";
 import babel from "@babel/core";
+import autoprefixer from "autoprefixer";
+import { exec, spawn, spawnSync } from "child_process";
 import crypto from "crypto";
-import { fileURLToPath } from "url";
 import fs from "fs";
 import gulp from "gulp";
+import postcss from "gulp-postcss";
+import rename from "gulp-rename";
+import replace from "gulp-replace";
+import zip from "gulp-zip";
 import merge from "merge-stream";
 import path from "path";
-import postcss from "gulp-postcss";
 import postcssDarkThemeClass from "postcss-dark-theme-class";
 import postcssDirPseudoClass from "postcss-dir-pseudo-class";
 import postcssDiscardComments from "postcss-discard-comments";
 import postcssNesting from "postcss-nesting";
-import { preprocess } from "./external/builder/builder.mjs";
-import rename from "gulp-rename";
-import replace from "gulp-replace";
 import stream from "stream";
 import streamqueue from "streamqueue";
 import TerserPlugin from "terser-webpack-plugin";
+import { fileURLToPath } from "url";
 import Vinyl from "vinyl";
 import webpack2 from "webpack";
 import webpackStream from "webpack-stream";
-import zip from "gulp-zip";
+import {
+  babelPluginPDFJSPreprocessor,
+  preprocessPDFJSCode,
+} from "./external/builder/babel-plugin-pdfjs-preprocessor.mjs";
+import { preprocess } from "./external/builder/builder.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -1193,22 +1193,39 @@ gulp.task(
   })
 );
 
+function updateLinksWithVersion(dir) {
+  const version = getVersionJSON().version;
+
+  const content = fs.readFileSync(dir + "web/viewer.html", "utf8").toString();
+
+  const updatedContent = content
+    .replace(/pdf.mjs/, `pdf.mjs?v=${version}`)
+    .replace(/viewer.mjs/, `viewer.mjs?v=${version}`)
+    .replace(/viewer.css/, `viewer.css?v=${version}`);
+
+  return createStringSource("viewer.html", updatedContent).pipe(
+    gulp.dest(dir + "web")
+  );
+}
+
 function buildMinified(defines, dir) {
   fs.rmSync(dir, { recursive: true, force: true });
 
   return merge([
     createMainBundle(defines).pipe(gulp.dest(dir + "build")),
     createWorkerBundle(defines).pipe(gulp.dest(dir + "build")),
-    // createSandboxBundle(defines).pipe(gulp.dest(dir + "build")),
     createWebBundle(defines, {
       defaultPreferencesDir: "minified/",
     }).pipe(gulp.dest(dir + "web")),
     gulp
-      .src([
-        "web/images/*.{png,svg,gif}",
-        "web/locale/*/viewer.ftl",
-        "web/locale/locale.json"
-      ], { base: "web/" })
+      .src(
+        [
+          "web/images/*.{png,svg,gif}",
+          "web/locale/*/viewer.ftl",
+          "web/locale/locale.json",
+        ],
+        { base: "web/" }
+      )
       .pipe(gulp.dest(dir + "web")),
 
     preprocessHTML("web/viewer.html", defines).pipe(gulp.dest(dir + "web")),
@@ -1243,10 +1260,16 @@ gulp.task(
     },
     function createMinified() {
       console.log();
-      console.log("### Creating minified viewer");
+      console.log("### Creating build of minified viewer");
       const defines = { ...DEFINES, MINIFIED: true, GENERIC: true };
 
       return buildMinified(defines, MINIFIED_DIR);
+    },
+    function updateLinksInViewer() {
+      console.log();
+      console.log("### Update links in viewer.html with api version");
+
+      return updateLinksWithVersion(MINIFIED_DIR);
     }
   )
 );
