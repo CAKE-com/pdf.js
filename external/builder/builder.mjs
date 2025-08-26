@@ -32,7 +32,7 @@ const AllWhitespaceRegexp = /^\s+$/g;
  * ++i;
  * //#endif
  */
-function preprocess(inFilename, outFilename, defines, includeFilePath) {
+function preprocess(inFilename, outFilename, defines) {
   let lineNumber = 0;
   function loc() {
     return fs.realpathSync(inFilename) + ":" + lineNumber;
@@ -116,7 +116,7 @@ function preprocess(inFilename, outFilename, defines, includeFilePath) {
       } else {
         fullpath = path.join(dir, file);
       }
-      preprocess(fullpath, writeLine, defines, includeFilePath);
+      preprocess(fullpath, writeLine, defines);
     } catch (e) {
       if (e.code === "ENOENT") {
         throw new Error('Failed to include "' + file + '" at ' + loc());
@@ -195,8 +195,7 @@ function preprocess(inFilename, outFilename, defines, includeFilePath) {
           break;
         case "include":
           if (state !== STATE_IF_FALSE && state !== STATE_ELSE_FALSE) {
-            const filePath = includeFilePath || m[2];
-            include(filePath);
+            include(m[2]);
           }
           break;
         case "error":

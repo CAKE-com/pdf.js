@@ -1007,9 +1007,8 @@ function discardCommentsCSS() {
 }
 
 function preprocessHTML(source, defines, options = {}) {
-  const { includeFilePath = "" } = options;
   const outName = getTempFile("~preprocess", ".html");
-  preprocess(source, outName, defines, includeFilePath);
+  preprocess(source, outName, defines);
   const out = fs.readFileSync(outName).toString();
   fs.unlinkSync(outName);
 
@@ -1194,23 +1193,23 @@ gulp.task(
   })
 );
 
-function createTempSnippet() {
-  const content = fs.readFileSync("web/viewer-snippet.html", "utf8").toString();
-
+function updateLinksWithVersion() {
   const version = getVersionJSON().version;
 
-  const contentUpdated = content.replace(/pdf.mjs/, `pdf.mjs?v=${version}`);
+  const content = fs
+    .readFileSync(MINIFIED_DIR + "web/viewer.html", "utf8")
+    .toString();
 
-  return createStringSource("viewer-snippet-updated.html", contentUpdated).pipe(
-    gulp.dest(TMP_DIR)
+  console.log("content", content);
+
+  const contentUpdated = content
+    .replace(/pdf.mjs/, `pdf.mjs?v=${version}`)
+    .replace(/viewer.mjs/, `viewer.mjs?v=${version}`)
+    .replace(/viewer.css/, `viewer.css?v=${version}`);
+
+  return createStringSource("viewer.html", contentUpdated).pipe(
+    gulp.dest(MINIFIED_DIR + "web")
   );
-}
-
-function removeTempSnippet() {
-  return new Promise((resolve, reject) => {
-    fs.unlinkSync(TMP_DIR + "viewer-snippet-updated.html");
-    resolve();
-  });
 }
 
 function buildMinified(defines, dir) {
@@ -1233,9 +1232,7 @@ function buildMinified(defines, dir) {
       )
       .pipe(gulp.dest(dir + "web")),
 
-    preprocessHTML("web/viewer.html", defines, {
-      includeFilePath: "../build/tmp/viewer-snippet-updated.html",
-    }).pipe(gulp.dest(dir + "web")),
+    preprocessHTML("web/viewer.html", defines).pipe(gulp.dest(dir + "web")),
     preprocessCSS("web/viewer.css", defines)
       .pipe(
         postcss([
@@ -1265,12 +1262,6 @@ gulp.task(
     async function prefsMinified() {
       await parseDefaultPreferences("minified/");
     },
-    function createTempViewerSnippet() {
-      console.log();
-      console.log("### Create temp viewer-html snippet");
-
-      return createTempSnippet(MINIFIED_DIR + "build");
-    },
     function createMinifiedBuild() {
       console.log();
       console.log("### Creating build dir of minified viewer");
@@ -1278,11 +1269,11 @@ gulp.task(
 
       return buildMinified(defines, MINIFIED_DIR);
     },
-    function removeTempViewerSnippet() {
+    function updateLinksInViewer() {
       console.log();
-      console.log("### Remove temp viewer-html snippet");
+      console.log("### Update links in viewer.html with api version");
 
-      return removeTempSnippet();
+      return updateLinksWithVersion(MINIFIED_DIR);
     }
   )
 );
