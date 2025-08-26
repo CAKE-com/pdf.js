@@ -1198,12 +1198,12 @@ function updateLinksWithVersion(dir) {
 
   const content = fs.readFileSync(dir + "web/viewer.html", "utf8").toString();
 
-  const contentUpdated = content
+  const updatedContent = content
     .replace(/pdf.mjs/, `pdf.mjs?v=${version}`)
     .replace(/viewer.mjs/, `viewer.mjs?v=${version}`)
     .replace(/viewer.css/, `viewer.css?v=${version}`);
 
-  return createStringSource("viewer.html", contentUpdated).pipe(
+  return createStringSource("viewer.html", updatedContent).pipe(
     gulp.dest(dir + "web")
   );
 }
