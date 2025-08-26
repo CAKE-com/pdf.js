@@ -1006,7 +1006,7 @@ function discardCommentsCSS() {
   return postcssDiscardComments({ remove });
 }
 
-function preprocessHTML(source, defines, options = {}) {
+function preprocessHTML(source, defines) {
   const outName = getTempFile("~preprocess", ".html");
   preprocess(source, outName, defines);
   const out = fs.readFileSync(outName).toString();
