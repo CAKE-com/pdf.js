@@ -1059,11 +1059,12 @@ const PDFViewerApplication = {
 
       await this.downloadManager.download(blob, url, filename, options);
     } catch {
-      // When the PDF document isn't ready, or the PDF file is still
-      // downloading, simply download using the URL.
       if (this._failedToLoad) {
         return;
       }
+
+      // When the PDF document isn't ready, or the PDF file is still
+      // downloading, simply download using the URL.
       await this.downloadManager.downloadUrl(url, filename, options);
     }
   },
