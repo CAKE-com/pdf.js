@@ -177,6 +177,7 @@ const PDFViewerApplication = {
   _nimbusDataPromise: null,
   _caretBrowsing: null,
   _isScrolling: false,
+  _failedToLoad: false,
 
   // Called once when the document is loaded.
   async initialize(appConfig) {
@@ -1027,6 +1028,7 @@ const PDFViewerApplication = {
         } else if (reason instanceof UnexpectedResponseException) {
           key = "pdfjs-unexpected-response-error";
         }
+
         return this._documentError(key, { message: reason.message }).then(
           () => {
             throw reason;
@@ -1059,6 +1061,9 @@ const PDFViewerApplication = {
     } catch {
       // When the PDF document isn't ready, or the PDF file is still
       // downloading, simply download using the URL.
+      if (this._failedToLoad) {
+        return;
+      }
       await this.downloadManager.downloadUrl(url, filename, options);
     }
   },
@@ -1119,6 +1124,8 @@ const PDFViewerApplication = {
       key || "pdfjs-loading-error",
       moreInfo
     );
+
+    this._failedToLoad = true;
 
     this.eventBus.dispatch("documenterror", {
       source: this,
