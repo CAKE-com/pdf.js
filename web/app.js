@@ -637,10 +637,8 @@ const PDFViewerApplication = {
     const { appConfig, eventBus } = this;
     let file;
     if (typeof PDFJSDev === "undefined" || PDFJSDev.test("GENERIC")) {
-      const queryString = document.location.search.substring(1);
-      const params = parseQueryString(queryString);
-      file = params.get("file") ?? AppOptions.get("defaultUrl");
-      validateFileURL(file, true);
+      file = AppOptions.get("defaultUrl");
+      // validateFileURL(file);
     } else if (PDFJSDev.test("MOZCENTRAL")) {
       file = window.location.href;
     } else if (PDFJSDev.test("CHROME")) {
@@ -1062,7 +1060,6 @@ const PDFViewerApplication = {
       if (this._failedToLoad) {
         return;
       }
-
       // When the PDF document isn't ready, or the PDF file is still
       // downloading, simply download using the URL.
       await this.downloadManager.downloadUrl(url, filename, options);
@@ -2135,21 +2132,13 @@ if (typeof PDFJSDev === "undefined" || !PDFJSDev.test("MOZCENTRAL")) {
 }
 
 if (typeof PDFJSDev === "undefined" || PDFJSDev.test("GENERIC")) {
-  const HOSTED_VIEWER_ORIGINS = ["null"];
   // eslint-disable-next-line no-var
-  var validateFileURL = function (file, forceNullHostedViewOrigin = false) {
+  var validateFileURL = function (file) {
     if (!file) {
       return;
     }
     try {
       const viewerOrigin = new URL(window.location.href).origin || "null";
-      if (
-        HOSTED_VIEWER_ORIGINS.includes(viewerOrigin) ||
-        forceNullHostedViewOrigin
-      ) {
-        // Hosted or local viewer, allow for any file locations
-        return;
-      }
       const fileOrigin = new URL(file, window.location.href).origin;
       // Removing of the following line will not guarantee that the viewer will
       // start accepting URLs from foreign origin -- CORS headers on the remote
