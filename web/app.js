@@ -177,7 +177,6 @@ const PDFViewerApplication = {
   _nimbusDataPromise: null,
   _caretBrowsing: null,
   _isScrolling: false,
-  _failedToLoad: false,
 
   // Called once when the document is loaded.
   async initialize(appConfig) {
@@ -1057,9 +1056,6 @@ const PDFViewerApplication = {
 
       await this.downloadManager.download(blob, url, filename, options);
     } catch {
-      if (this._failedToLoad) {
-        return;
-      }
       // When the PDF document isn't ready, or the PDF file is still
       // downloading, simply download using the URL.
       await this.downloadManager.downloadUrl(url, filename, options);
@@ -1122,8 +1118,6 @@ const PDFViewerApplication = {
       key || "pdfjs-loading-error",
       moreInfo
     );
-
-    this._failedToLoad = true;
 
     this.eventBus.dispatch("documenterror", {
       source: this,
