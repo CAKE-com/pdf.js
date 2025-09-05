@@ -638,7 +638,7 @@ const PDFViewerApplication = {
     let file;
     if (typeof PDFJSDev === "undefined" || PDFJSDev.test("GENERIC")) {
       file = AppOptions.get("defaultUrl");
-      // validateFileURL(file);
+      validateFileURL(file);
     } else if (PDFJSDev.test("MOZCENTRAL")) {
       file = window.location.href;
     } else if (PDFJSDev.test("CHROME")) {
@@ -2137,9 +2137,19 @@ if (typeof PDFJSDev === "undefined" || PDFJSDev.test("GENERIC")) {
     if (!file) {
       return;
     }
+    const ALLOWED_FILE_ORIIGNS = [
+      "https://files.pumble.com", // PROD
+      "https://files.stage.ops.pumble.com", // STAGE
+      "https://files.fe.pumble-dev.com", // DEV
+    ];
+
     try {
       const viewerOrigin = new URL(window.location.href).origin || "null";
       const fileOrigin = new URL(file, window.location.href).origin;
+
+      if (ALLOWED_FILE_ORIIGNS.includes(fileOrigin)) {
+        return;
+      }
       // Removing of the following line will not guarantee that the viewer will
       // start accepting URLs from foreign origin -- CORS headers on the remote
       // server must be properly configured.
