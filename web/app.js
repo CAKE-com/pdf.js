@@ -636,10 +636,8 @@ const PDFViewerApplication = {
     const { appConfig, eventBus } = this;
     let file;
     if (typeof PDFJSDev === "undefined" || PDFJSDev.test("GENERIC")) {
-      const queryString = document.location.search.substring(1);
-      const params = parseQueryString(queryString);
-      file = params.get("file") ?? AppOptions.get("defaultUrl");
-      validateFileURL(file, true);
+      file = AppOptions.get("defaultUrl");
+      validateFileURL(file);
     } else if (PDFJSDev.test("MOZCENTRAL")) {
       file = window.location.href;
     } else if (PDFJSDev.test("CHROME")) {
@@ -1027,6 +1025,7 @@ const PDFViewerApplication = {
         } else if (reason instanceof UnexpectedResponseException) {
           key = "pdfjs-unexpected-response-error";
         }
+
         return this._documentError(key, { message: reason.message }).then(
           () => {
             throw reason;
@@ -2127,22 +2126,24 @@ if (typeof PDFJSDev === "undefined" || !PDFJSDev.test("MOZCENTRAL")) {
 }
 
 if (typeof PDFJSDev === "undefined" || PDFJSDev.test("GENERIC")) {
-  const HOSTED_VIEWER_ORIGINS = ["null"];
   // eslint-disable-next-line no-var
-  var validateFileURL = function (file, forceNullHostedViewOrigin = false) {
+  var validateFileURL = function (file) {
     if (!file) {
       return;
     }
+    const ALLOWED_FILE_ORIIGNS = [
+      "https://files.pumble.com", // PROD
+      "https://files.stage.ops.pumble.com", // STAGE
+      "https://files.fe.pumble-dev.com", // DEV
+    ];
+
     try {
       const viewerOrigin = new URL(window.location.href).origin || "null";
-      if (
-        HOSTED_VIEWER_ORIGINS.includes(viewerOrigin) ||
-        forceNullHostedViewOrigin
-      ) {
-        // Hosted or local viewer, allow for any file locations
+      const fileOrigin = new URL(file, window.location.href).origin;
+
+      if (ALLOWED_FILE_ORIIGNS.includes(fileOrigin)) {
         return;
       }
-      const fileOrigin = new URL(file, window.location.href).origin;
       // Removing of the following line will not guarantee that the viewer will
       // start accepting URLs from foreign origin -- CORS headers on the remote
       // server must be properly configured.
