@@ -33,6 +33,7 @@ const AppConstants =
 window.PDFViewerApplication = PDFViewerApplication;
 window.PDFViewerApplicationConstants = AppConstants;
 window.PDFViewerApplicationOptions = AppOptions;
+// expose viewer version
 window.PDFViewerApiVersion = pdfjsVersion;
 
 function getViewerConfiguration() {
